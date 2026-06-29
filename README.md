@@ -88,11 +88,7 @@ All server-side digests use **peppered SHA-256**: `hex(SHA-256(pepper + ":" + va
 ### Backend layout
 
 ```
-                         ┌───────────────┐
-                         │ Load Balancer │
-                         └───────┬───────┘
-                                 │
-     ┌─────────────┐      ┌───────▼───────┐      ┌─────────────┐
+     ┌─────────────┐      ┌───────────────┐      ┌─────────────┐
      │     CLI     │─────►│   Cloud Run   │◄────►│   GitHub    │
      │   agentid   │      │  agentid-api  │      │  App API    │
      └─────────────┘      └───────┬───────┘      └─────────────┘
@@ -111,8 +107,6 @@ All server-side digests use **peppered SHA-256**: `hex(SHA-256(pepper + ":" + va
 | **Cloud SQL** | Postgres 15, `db-custom-2-4096`, regional HA, private IP via VPC peering, automated backups + PITR (7 days) |
 | **Memorystore** | Redis 7.0, 1 GiB, `AUTH` enabled, `allkeys-lru`, transit encryption on |
 | **VPC** | `agentid-prod-vpc`, `/20` subnet, Private Service Connect to SQL + Redis, Cloud NAT for GitHub/email egress |
-| **Load balancer** | Managed TLS cert, HTTPS redirect, backend timeout 30s |
-| **Cloud Armor** | Rate-based ban (100 req/min/IP), OWASP CRS preview ruleset |
 | **KMS** | `global` keyring — symmetric CMK for Secret Manager envelope; separate asymmetric key for optional field-level encrypt |
 | **Secret Manager** | Versioned secrets, IAM `secretAccessor` scoped per-secret to Cloud Run SA |
 | **Logging** | Structured JSON → Cloud Logging; audit table mirrored for query API; 90-day retention |
